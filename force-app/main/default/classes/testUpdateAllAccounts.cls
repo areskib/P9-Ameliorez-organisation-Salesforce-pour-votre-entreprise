@@ -20,7 +20,8 @@ private class testUpdateAllAccounts {
         Order o1 = new Order(
             AccountId = acc1.Id,
             Status = 'Draft',
-            EffectiveDate = Date.today()
+            EffectiveDate = Date.today(),
+            Pricebook2Id = Test.getStandardPricebookId()
         );
         insert o1;
 
@@ -29,7 +30,6 @@ private class testUpdateAllAccounts {
         OrderItem oi2 = new OrderItem(OrderId = o1.Id, PricebookEntryId = pbe.Id, Quantity = 20, UnitPrice = 1000);
         insert oi2;
 
-        // On active la commande maintenant que ses lignes existent (TotalAmount se calcule automatiquement)
         o1.Status = 'Activated';
         update o1;
 
@@ -52,7 +52,8 @@ private class testUpdateAllAccounts {
         Order o2 = new Order(
             AccountId = acc2.Id,
             Status = 'Draft',
-            EffectiveDate = Date.today()
+            EffectiveDate = Date.today(),
+            Pricebook2Id = Test.getStandardPricebookId()
         );
         insert o2;
 
