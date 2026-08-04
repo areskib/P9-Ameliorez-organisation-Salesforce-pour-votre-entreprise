@@ -1,17 +1,14 @@
-global class UpdateAllAccounts implements Database.Batchable<sObject>{
-    
-    global Database.QueryLocator start(Database.BatchableContext info){ 
-        //Requeter seulement les comptes qui ont au moins une commande avec le Status 'Activated'
+global class UpdateAllAccounts implements Database.Batchable<sObject> {
+
+    global Database.QueryLocator start(Database.BatchableContext info) {
         return Database.getQueryLocator('SELECT Id FROM Account');
- 
     }
-     
-    global void execute(Database.BatchableContext info, List<Account> scope){
-        Set<Id> setAccountIds = (new Map<Id,SObject>(scope)).keySet();
-        // Appeler une class qui va faire la logique du code;
-    }    
-     
-    global void finish(Database.BatchableContext info){     
-        
-    } 
- }
+
+    global void execute(Database.BatchableContext info, List<Account> scope) {
+        Set<Id> accountIds = (new Map<Id, SObject>(scope)).keySet();
+        UpdateAccounts.updateChiffreAffaires(accountIds);
+    }
+
+    global void finish(Database.BatchableContext info) {
+    }
+}
