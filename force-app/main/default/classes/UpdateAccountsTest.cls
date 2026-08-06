@@ -1,5 +1,5 @@
 @isTest
-private class testUpdateAccounts {
+private class UpdateAccountsTest {
 
     private static void createOrderItemForOrder(Id orderId) {
         Product2 pd = new Product2(Name = 'Produit Test', Family = 'Chemise');

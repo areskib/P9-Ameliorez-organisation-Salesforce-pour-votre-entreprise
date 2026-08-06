@@ -1,5 +1,5 @@
 @isTest
-private class testUpdateAllAccounts {
+private class UpdateAllAccountsTest {
 
     @isTest
     static void testBatchUpdatesChiffreAffaires() {

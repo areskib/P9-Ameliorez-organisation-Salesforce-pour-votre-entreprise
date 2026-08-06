@@ -1,5 +1,5 @@
 @isTest
-private class testCalculMontant {
+private class CalculMontantTest {
 
     @isTest
     static void testNetAmountCalculatedOnSingleOrder() {

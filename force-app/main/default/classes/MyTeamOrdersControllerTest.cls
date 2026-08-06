@@ -1,5 +1,5 @@
 @isTest
-private class testMyTeamOrdersController {
+private class MyTeamOrdersControllerTest {
 
     private static void createOrderItemForOrder(Id orderId) {
         Product2 pd = new Product2(Name = 'Produit Test LWC', Family = 'Chemise');
