@@ -21,6 +21,9 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: 'Mark repository as safe'
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+
       - name: Install sfdx-git-delta plugin
         run: echo "y" | sf plugins install sfdx-git-delta
 
@@ -30,7 +33,7 @@ jobs:
       - name: 'Generate metadata delta pull request'
         run: |
           mkdir .temp
-          sf sgd source delta --to "HEAD" --from "HEAD^" --output .temp/ --generate-delta
+          sf sgd source delta --to "HEAD" --from "HEAD^" -o .temp/
 
       - name: 'Run Apex tests'
         run: sf apex run test --test-level RunLocalTests --wait 30 --result-format human
