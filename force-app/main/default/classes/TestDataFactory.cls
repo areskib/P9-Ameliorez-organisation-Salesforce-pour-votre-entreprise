@@ -1,55 +1,55 @@
 @isTest
 public class TestDataFactory {
 
-    public static Account createAccount(String name) {
-        Account acc = new Account(Name = name);
-        insert acc;
-        return acc;
+    public static Account createAccount(String accountName) {
+        Account account = new Account(Name = accountName);
+        insert account;
+        return account;
     }
 
     public static PricebookEntry createPricebookEntry(String productName, Decimal unitPrice) {
-        Product2 pd = new Product2(Name = productName, Family = 'Chemise');
-        insert pd;
+        Product2 product = new Product2(Name = productName, Family = 'Chemise');
+        insert product;
 
-        PricebookEntry pbe = new PricebookEntry(
+        PricebookEntry pricebookEntry = new PricebookEntry(
             Pricebook2Id = Test.getStandardPricebookId(),
-            Product2Id = pd.Id,
+            Product2Id = product.Id,
             UnitPrice = unitPrice,
             IsActive = true
         );
-        insert pbe;
-        return pbe;
+        insert pricebookEntry;
+        return pricebookEntry;
     }
 
     public static Order createDraftOrder(Id accountId) {
-        Order o = new Order(
+        Order order = new Order(
             AccountId = accountId,
             Status = 'Draft',
             EffectiveDate = Date.today(),
             Pricebook2Id = Test.getStandardPricebookId()
         );
-        insert o;
-        return o;
+        insert order;
+        return order;
     }
 
     public static OrderItem createOrderItem(Id orderId, Id pricebookEntryId, Integer quantity, Decimal unitPrice) {
-        OrderItem oi = new OrderItem(
+        OrderItem orderItem = new OrderItem(
             OrderId = orderId,
             PricebookEntryId = pricebookEntryId,
             Quantity = quantity,
             UnitPrice = unitPrice
         );
-        insert oi;
-        return oi;
+        insert orderItem;
+        return orderItem;
     }
 
     public static Order createActivatedOrderWithItem(Id accountId, Decimal unitPrice, Integer quantity) {
-        PricebookEntry pbe = createPricebookEntry('Produit Test', unitPrice);
-        Order o = createDraftOrder(accountId);
-        createOrderItem(o.Id, pbe.Id, quantity, unitPrice);
+        PricebookEntry pricebookEntry = createPricebookEntry('Produit Test', unitPrice);
+        Order order = createDraftOrder(accountId);
+        createOrderItem(order.Id, pricebookEntry.Id, quantity, unitPrice);
 
-        o.Status = 'Activated';
-        update o;
-        return o;
+        order.Status = 'Activated';
+        update order;
+        return order;
     }
 }

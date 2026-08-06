@@ -27,7 +27,7 @@ private class UpdateAllAccountsTest {
         Test.stopTest();
 
         Account result = [SELECT Chiffre_d_affaire__c FROM Account WHERE Id = :acc2.Id];
-        System.assertEquals(0, result.Chiffre_d_affaire__c,
-            'Une commande non Activated ne doit pas être comptée dans le chiffre d\'affaires.');
+        System.assertEquals(null, result.Chiffre_d_affaire__c,
+            'Un compte sans commande Activated n\'est plus traité par le batch optimisé, son CA reste donc inchangé (null).');
     }
 }
