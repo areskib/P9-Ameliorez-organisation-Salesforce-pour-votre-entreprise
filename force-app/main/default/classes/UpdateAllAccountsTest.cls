@@ -3,35 +3,8 @@ private class UpdateAllAccountsTest {
 
     @isTest
     static void testBatchUpdatesChiffreAffaires() {
-        Account acc1 = new Account(Name = 'Test Account 1');
-        insert acc1;
-
-        Product2 pd1 = new Product2(Name = 'Chemise Verte longue XYX', Family = 'Chemise');
-        insert pd1;
-
-        PricebookEntry pbe = new PricebookEntry(
-            Pricebook2Id = Test.getStandardPricebookId(),
-            Product2Id = pd1.Id,
-            UnitPrice = 1020,
-            IsActive = true
-        );
-        insert pbe;
-
-        Order o1 = new Order(
-            AccountId = acc1.Id,
-            Status = 'Draft',
-            EffectiveDate = Date.today(),
-            Pricebook2Id = Test.getStandardPricebookId()
-        );
-        insert o1;
-
-        OrderItem oi1 = new OrderItem(OrderId = o1.Id, PricebookEntryId = pbe.Id, Quantity = 10, UnitPrice = 150);
-        insert oi1;
-        OrderItem oi2 = new OrderItem(OrderId = o1.Id, PricebookEntryId = pbe.Id, Quantity = 20, UnitPrice = 1000);
-        insert oi2;
-
-        o1.Status = 'Activated';
-        update o1;
+        Account acc1 = TestDataFactory.createAccount('Test Account 1');
+        Order o1 = TestDataFactory.createActivatedOrderWithItem(acc1.Id, 150, 10);
 
         Order refreshedOrder = [SELECT TotalAmount FROM Order WHERE Id = :o1.Id];
 
@@ -46,16 +19,8 @@ private class UpdateAllAccountsTest {
 
     @isTest
     static void testBatchIgnoresNonActivatedOrders() {
-        Account acc2 = new Account(Name = 'Test Account 2');
-        insert acc2;
-
-        Order o2 = new Order(
-            AccountId = acc2.Id,
-            Status = 'Draft',
-            EffectiveDate = Date.today(),
-            Pricebook2Id = Test.getStandardPricebookId()
-        );
-        insert o2;
+        Account acc2 = TestDataFactory.createAccount('Test Account 2');
+        TestDataFactory.createDraftOrder(acc2.Id);
 
         Test.startTest();
         Database.executeBatch(new UpdateAllAccounts());

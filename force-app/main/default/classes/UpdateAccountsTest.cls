@@ -1,39 +1,10 @@
 @isTest
 private class UpdateAccountsTest {
 
-    private static void createOrderItemForOrder(Id orderId) {
-        Product2 pd = new Product2(Name = 'Produit Test', Family = 'Chemise');
-        insert pd;
-
-        PricebookEntry pbe = new PricebookEntry(
-            Pricebook2Id = Test.getStandardPricebookId(),
-            Product2Id = pd.Id,
-            UnitPrice = 100,
-            IsActive = true
-        );
-        insert pbe;
-
-        insert new OrderItem(OrderId = orderId, PricebookEntryId = pbe.Id, Quantity = 5, UnitPrice = 100);
-    }
-
     @isTest
     static void testTriggerUpdatesCAOnActivation() {
-        Account acc = new Account(Name = 'Test Account CA');
-        insert acc;
-
-        Order o = new Order(
-            AccountId = acc.Id,
-            Status = 'Draft',
-            EffectiveDate = Date.today(),
-            Pricebook2Id = Test.getStandardPricebookId()
-        );
-        insert o;
-        createOrderItemForOrder(o.Id);
-
-        Test.startTest();
-        o.Status = 'Activated';
-        update o;
-        Test.stopTest();
+        Account acc = TestDataFactory.createAccount('Test Account CA');
+        Order o = TestDataFactory.createActivatedOrderWithItem(acc.Id, 100, 5);
 
         Order refreshedOrder = [SELECT TotalAmount FROM Order WHERE Id = :o.Id];
         Account result = [SELECT Chiffre_d_affaire__c FROM Account WHERE Id = :acc.Id];
@@ -44,16 +15,8 @@ private class UpdateAccountsTest {
 
     @isTest
     static void testTriggerDoesNotFireOnNonActivationUpdate() {
-        Account acc = new Account(Name = 'Test Account No Trigger');
-        insert acc;
-
-        Order o = new Order(
-            AccountId = acc.Id,
-            Status = 'Draft',
-            EffectiveDate = Date.today(),
-            Pricebook2Id = Test.getStandardPricebookId()
-        );
-        insert o;
+        Account acc = TestDataFactory.createAccount('Test Account No Trigger');
+        Order o = TestDataFactory.createDraftOrder(acc.Id);
 
         Test.startTest();
         o.Description = 'Une simple note, pas de changement de statut';
@@ -67,18 +30,8 @@ private class UpdateAccountsTest {
 
     @isTest
     static void testBulkTriggerHandles200Orders() {
-        Account acc = new Account(Name = 'Test Account Bulk 200');
-        insert acc;
-
-        Product2 pd = new Product2(Name = 'Produit Bulk', Family = 'Chemise');
-        insert pd;
-        PricebookEntry pbe = new PricebookEntry(
-            Pricebook2Id = Test.getStandardPricebookId(),
-            Product2Id = pd.Id,
-            UnitPrice = 50,
-            IsActive = true
-        );
-        insert pbe;
+        Account acc = TestDataFactory.createAccount('Test Account Bulk 200');
+        PricebookEntry pbe = TestDataFactory.createPricebookEntry('Produit Bulk', 50);
 
         List<Order> orders = new List<Order>();
         for (Integer i = 0; i < 200; i++) {
