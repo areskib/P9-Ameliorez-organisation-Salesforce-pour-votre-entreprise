@@ -31,13 +31,20 @@ jobs:
         run: echo ${{ secrets.SFDX_AUTH_URL }} | sf org login sfdx-url -s -u -
 
       - name: 'Generate metadata delta pull request'
+        id: delta
         run: |
           mkdir .temp
           sf sgd source delta --to "HEAD" --from "HEAD^" -o .temp/
+          if grep -q "<types>" .temp/package/package.xml 2>/dev/null; then
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+          fi
 
       - name: 'Run Apex tests'
-        run: sf apex run test --test-level RunSpecifiedTests --tests CalculMontantTest,UpdateAccountsTest,UpdateAllAccountsTest,MyTeamOrdersControllerTest,WeeklyPriceUpdateTest --wait 30 --result-format human
+        if: steps.delta.outputs.has_changes == 'true'
+        run: sf apex run test --test-level RunSpecifiedTests --tests CalculMontantTest --tests UpdateAccountsTest --tests UpdateAllAccountsTest --tests MyTeamOrdersControllerTest --tests WeeklyPriceUpdateTest --wait 30 --result-format human
 
       - name: 'Déployer les métadonnées sur la branch main'
-        if: github.ref == 'refs/heads/main'
-        run: sf project deploy start --manifest .temp/package/package.xml --test-level RunSpecifiedTests --tests CalculMontantTest,UpdateAccountsTest,UpdateAllAccountsTest,MyTeamOrdersControllerTest,WeeklyPriceUpdateTest --wait 30
+        if: github.ref == 'refs/heads/main' && steps.delta.outputs.has_changes == 'true'
+        run: sf project deploy start --manifest .temp/package/package.xml --test-level RunSpecifiedTests --tests CalculMontantTest --tests UpdateAccountsTest --tests UpdateAllAccountsTest --tests MyTeamOrdersControllerTest --tests WeeklyPriceUpdateTest --wait 30
