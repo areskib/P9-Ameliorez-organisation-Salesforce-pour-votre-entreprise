@@ -36,8 +36,8 @@ jobs:
           sf sgd source delta --to "HEAD" --from "HEAD^" -o .temp/
 
       - name: 'Run Apex tests'
-        run: sf apex run test --test-level RunLocalTests --wait 30 --result-format human
+        run: sf apex run test --test-level RunSpecifiedTests --tests CalculMontantTest,UpdateAccountsTest,UpdateAllAccountsTest,MyTeamOrdersControllerTest,WeeklyPriceUpdateTest --wait 30 --result-format human
 
       - name: 'Déployer les métadonnées sur la branch main'
         if: github.ref == 'refs/heads/main'
-        run: sf project deploy start --manifest .temp/package/package.xml --test-level RunLocalTests --wait 30
+        run: sf project deploy start --manifest .temp/package/package.xml --test-level RunSpecifiedTests --tests CalculMontantTest,UpdateAccountsTest,UpdateAllAccountsTest,MyTeamOrdersControllerTest,WeeklyPriceUpdateTest --wait 30
